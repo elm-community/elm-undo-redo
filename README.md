@@ -10,6 +10,11 @@ Since there is no mutation, there is no risk of things getting corrupted. Given
 immutability lets you do structural sharing within data structures, it also
 means these snapshots can be quite compact!
 
+## Example demos
+
+- https://elm-community.github.io/undo-redo/counter.html
+- https://elm-community.github.io/undo-redo/text-editor.html
+- https://elm-community.github.io/undo-redo/counter-with-cats.html
 
 ## How it works
 
@@ -149,3 +154,7 @@ This API is designed to work really nicely with
 [The Elm Architecture](http://guide.elm-lang.org/architecture/index.html).
 
 It has a lot more cool stuff, so read the [docs](http://package.elm-lang.org/packages/elm-community/undo-redo/latest).
+
+## Production
+
+To compile and deploy the examples to GitHub static pages in `gh-pages` branch, run `./examples/deploy.sh`.
