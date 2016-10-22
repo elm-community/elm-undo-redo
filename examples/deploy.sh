@@ -9,5 +9,5 @@ cd dist
 git init
 git add .
 git commit -m "Deploy to Github Pages"
-git push --force git@github.com:cbenz/undo-redo.git master:gh-pages
+git push --force git@github.com:elm-community/undo-redo.git master:gh-pages
 popd
