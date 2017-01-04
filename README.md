@@ -39,7 +39,6 @@ when it is clicked, a counter is incremented.
 -- BEFORE
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
-import Html.App as Html
 
 main =
     Html.beginnerProgram
@@ -84,7 +83,6 @@ the original, and we will go into the differences afterwards.
 -- AFTER
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
-import Html.App as Html
 import UndoList exposing (UndoList)
 
 main =
@@ -137,7 +135,7 @@ Adding redo functionality is quite the same. You can find by yourself as an exer
 
 ### Usage with commands
 
-When you use `Html.App.program` instead of `Html.App.beginnerProgram` as above, you can use commands
+When you use `Html.program` instead of `Html.beginnerProgram` as above, you can use commands
 in your `update` function.
 
 Look at the [counter with cats example](./examples/CounterWithCats.elm) which loads a GIF image whenever you increment
