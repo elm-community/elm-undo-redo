@@ -1,5 +1,6 @@
 module CounterWithCats exposing (..)
 
+import Browser
 import Html exposing (Html, div, button, img, text)
 import Html.Attributes exposing (src)
 import Html.Events exposing (onClick)
@@ -9,10 +10,10 @@ import Task
 import Json.Decode as Json
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
-        { init = init
+    Browser.element
+        { init = \() -> init
         , view = view
         , update = update
         , subscriptions = always Sub.none
@@ -56,7 +57,7 @@ update msg ({ present } as model) =
             ( UndoList.redo model, Cmd.none )
 
         OnFetch (Ok newUrl) ->
-            ( UndoList.mapPresent (\present -> { present | gifUrl = Just newUrl })
+            ( UndoList.mapPresent (\_ -> { present | gifUrl = Just newUrl })
                 model
             , Cmd.none
             )
@@ -75,7 +76,7 @@ view model =
         , button [ onClick Redo ]
             [ text "Redo" ]
         , div []
-            [ text (toString model.present.counter) ]
+            [ text (String.fromInt model.present.counter) ]
         , div []
             (case model.present.gifUrl of
                 Just gifUrl ->

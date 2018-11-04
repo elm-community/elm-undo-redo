@@ -1,27 +1,75 @@
-module UndoList exposing (..)
+module UndoList
+    exposing
+        ( UndoList
+        , undo
+        , redo
+        , fresh
+        , new
+        , forget
+        , reset
+        , hasPast
+        , hasFuture
+        , length
+        , lengthPast
+        , lengthFuture
+        , Msg(..)
+        , mapMsg
+        , map
+        , mapPresent
+        , update
+        , connect
+        , reduce
+        , foldl
+        , foldr
+        , reverse
+        , flatten
+        , flatMap
+        , andThen
+        , map2
+        , andMap
+        , view
+        , toList
+        , fromList
+        )
 
 {-| UndoList Data Structure.
 
+
 # Definition
+
 @docs UndoList
 
+
 # Basic Operations
+
 @docs undo, redo, fresh, new, forget, reset
 
+
 # Query UndoList
+
 @docs hasPast, hasFuture, length, lengthPast, lengthFuture
 
+
 # Messages
+
 @docs Msg, mapMsg
 
+
 # Functional Operations
+
 @docs map, mapPresent, update, connect, reduce, foldl, foldr, reverse, flatten, flatMap, andThen, map2, andMap
 
+
+
 # Shorthands
+
 @docs view
 
+
 # Conversions
+
 @docs toList, fromList
+
 -}
 
 import List
@@ -35,14 +83,14 @@ import List
 {-| The UndoList data structure.
 An UndoList has:
 
-1. A list of past states
-2. A present state
-3. A list of future states
-
+1.  A list of past states
+2.  A present state
+3.  A list of future states
 
 The head of the past list is the most recent state and the head of the future
 list is the next state. (i.e., the tails of both lists point away from the
 present)
+
 -}
 type alias UndoList state =
     { past : List state
@@ -63,7 +111,8 @@ a future state.
 
 i.e.
 
-    undo (UndoList [3,2,1] 4 [5,6]) == UndoList [2,1] 3 [4,5,6]
+    undo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [ 2, 1 ] 3 [ 4, 5, 6 ]
+
 -}
 undo : UndoList state -> UndoList state
 undo { past, present, future } =
@@ -81,7 +130,8 @@ into a past state.
 
 i.e.
 
-    redo (UndoList [3,2,1] 4 [5,6]) == UndoList [4,3,2,1] 5 [6]
+    redo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [ 4, 3, 2, 1 ] 5 [ 6 ]
+
 -}
 redo : UndoList state -> UndoList state
 redo { past, present, future } =
@@ -112,7 +162,9 @@ new event { past, present } =
 This simply clears the past list.
 
 i.e.
-    forget (UndoList [3,2,1] 4 [5,6]) == UndoList [] 4 [5,6]
+
+    forget (UndoList [3,2,1] 4 [5,6]) --> UndoList [] 4 [5,6]
+
 -}
 forget : UndoList state -> UndoList state
 forget { present, future } =
@@ -124,7 +176,8 @@ and clearing all other states.
 
 i.e.
 
-    reset (UndoList [3,2,1] 4 [5,6]) == UndoList [] 1 []
+    reset (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [] 1 []
+
 -}
 reset : UndoList state -> UndoList state
 reset { past, present } =
@@ -143,6 +196,9 @@ reset { past, present } =
 
 
 {-| Check if the undo-list has any past states.
+
+    hasPast (UndoList [] 1 []) --> False
+    hasPast (UndoList [ 1, 2, 3 ] 4 []) --> True
 -}
 hasPast : UndoList state -> Bool
 hasPast =
@@ -150,6 +206,9 @@ hasPast =
 
 
 {-| Check if the undo-list has any future states.
+
+    hasFuture (UndoList [] 1 []) --> False
+    hasFuture (UndoList [] 1 [ 2, 3, 4 ]) --> True
 -}
 hasFuture : UndoList state -> Bool
 hasFuture =
@@ -157,6 +216,8 @@ hasFuture =
 
 
 {-| Get the full length of an undo-list
+
+    length (UndoList [ 0 ] 1 [ 2, 3, 4 ]) --> 5
 -}
 length : UndoList state -> Int
 length undolist =
@@ -164,6 +225,8 @@ length undolist =
 
 
 {-| Get the length of the past.
+
+    lengthPast (UndoList [ 0 ] 1 [ 2, 3, 4 ]) --> 1
 -}
 lengthPast : UndoList state -> Int
 lengthPast =
@@ -171,6 +234,8 @@ lengthPast =
 
 
 {-| Get the length of the future
+
+    lengthFuture (UndoList [ 0 ] 1 [ 2, 3, 4 ]) --> 3
 -}
 lengthFuture : UndoList state -> Int
 lengthFuture =
@@ -188,6 +253,7 @@ most use cases. This works best when paired with the `update` function as
 `update` will perform the corresponding operations on the undolist automatically.
 
 Consider using your own data type only if you really need it.
+
 -}
 type Msg msg
     = Reset
@@ -198,6 +264,9 @@ type Msg msg
 
 
 {-| Map a function over a msg.
+
+    mapMsg sqrt (New 100) --> New 10
+    mapMsg sqrt Undo --> Undo
 -}
 mapMsg : (a -> b) -> Msg a -> Msg b
 mapMsg f msg =
@@ -235,8 +304,8 @@ Example:
     import UndoList.Encode as Encode
 
     encode encoder undolist =
-      map encoder undolist
-      |> Encode.undolist
+        map encoder undolist
+            |> Encode.undolist
 -}
 map : (a -> b) -> UndoList a -> UndoList b
 map f { past, present, future } =
@@ -257,10 +326,11 @@ map2 f undoListA undoListB =
     map f xs
         |> andMap ys
         |> andMap zs
+
 -}
 andMap : UndoList a -> UndoList (a -> b) -> UndoList b
 andMap =
-    flip (map2 (<|))
+    \y x -> map2 (<|) x y
 
 
 {-| Apply a function only to the present.
@@ -274,7 +344,6 @@ mapPresent f { past, present, future } =
 This is very useful to allow you to write update functions that only deal with
 the individual states of your system and treat undo/redo as an add on.
 
-
 Example:
 
     -- Your update function
@@ -283,12 +352,12 @@ Example:
         ... -- some implementation
 
     -- Your new update function
-    update' = UndoList.update update
+    updateWithUndo = UndoList.update update
 
 -}
 update : (msg -> state -> state) -> Msg msg -> UndoList state -> UndoList state
-update updater msg undolist =
-    case msg of
+update updater wrapperMessage undolist =
+    case wrapperMessage of
         Reset ->
             reset undolist
 
@@ -342,7 +411,7 @@ reverse { past, present, future } =
 flatten : UndoList (UndoList a) -> UndoList a
 flatten { past, present, future } =
     UndoList (present.past ++ List.reverse (List.concatMap toList past))
-        (present.present)
+        present.present
         (present.future ++ List.concatMap toList future)
 
 
@@ -380,7 +449,9 @@ your actual view function.
 Suppose you define the following:
 
     initial : model
+
     update : msg -> model -> model
+
     view : model -> Html (UndoList.Msg msg)
 
 Then, you could construct the main function as follows:
@@ -406,7 +477,8 @@ view viewer { present } =
 
 {-| Convert an undo-list to a list :
 
-    toList (UndoList [3,2,1] 4 [5,6]) == [1,2,3,4,5,6]
+    toList (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> [ 1, 2, 3, 4, 5, 6 ]
+
 -}
 toList : UndoList state -> List state
 toList { past, present, future } =
@@ -416,7 +488,8 @@ toList { past, present, future } =
 {-| Convert a list to undolist. The provided state is used as the present
 state and the list is used as the future states.
 
-    fromList 1 [2,3,4] == UndoList [] 1 [2,3,4]
+    fromList 1 [ 2, 3, 4 ] --> UndoList [] 1 [ 2, 3, 4 ]
+
 -}
 fromList : state -> List state -> UndoList state
 fromList present future =

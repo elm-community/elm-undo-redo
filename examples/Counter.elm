@@ -2,13 +2,14 @@ module Counter exposing (..)
 
 import UndoList exposing (UndoList)
 import Html exposing (Html, div, button, text)
+import Browser
 import Html.Events exposing (onClick)
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.beginnerProgram
-        { model = UndoList.fresh 0
+    Browser.sandbox
+        { init = UndoList.fresh 0
         , view = view
         , update = update
         }
@@ -47,5 +48,5 @@ view model =
         , button [ onClick Redo ]
             [ text "Redo" ]
         , div []
-            [ text (toString model) ]
+            [ text (String.fromInt model.present) ]
         ]

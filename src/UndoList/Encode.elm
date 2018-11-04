@@ -4,27 +4,30 @@ module UndoList.Encode exposing (undolist, msg)
 
 Provides JSON encoders for Timelines and UndoList Messages.
 
+
 # Encoders
+
 @docs undolist, msg
 
 -}
 
-import UndoList exposing (UndoList, Msg(..))
-import Json.Encode as Json exposing (Value)
+import Json.Encode as Encode exposing (Value)
+import UndoList exposing (Msg(..), UndoList)
 
 
 {-| Encode an undolist of JSON values.
 Best paired with the `map` function from UndoList.
 
-    encodeUndoList stateEncoder  =
-      UndoList.map stateEncoder >> undolist
+    encodeUndoList stateEncoder =
+        UndoList.map stateEncoder >> undolist
+
 -}
 undolist : UndoList Value -> Value
 undolist { past, present, future } =
-    Json.object
-        [ ( "past", Json.list past )
+    Encode.object
+        [ ( "past", Encode.list identity past )
         , ( "present", present )
-        , ( "future", Json.list future )
+        , ( "future", Encode.list identity future )
         ]
 
 
@@ -32,22 +35,23 @@ undolist { past, present, future } =
 Best paired with the `mapMsg` function from UndoList.
 
     encodeMsg msgEncoder =
-      UndoList.mapMsg msgEncoder >> msg
+        UndoList.mapMsg msgEncoder >> msg
+
 -}
 msg : Msg Value -> Value
-msg msg =
-    case msg of
+msg wrapperMessage =
+    case wrapperMessage of
         Reset ->
-            Json.string "Reset"
+            Encode.string "Reset"
 
         Redo ->
-            Json.string "Redo"
+            Encode.string "Redo"
 
         Undo ->
-            Json.string "Undo"
+            Encode.string "Undo"
 
         Forget ->
-            Json.string "Forget"
+            Encode.string "Forget"
 
         New value ->
-            Json.object [ ( "New", value ) ]
+            Encode.object [ ( "New", value ) ]

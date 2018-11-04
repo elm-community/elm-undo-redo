@@ -1,0 +1,4 @@
+{
+  "root": "../src",
+  "tests": ["UndoList", "UndoList.Encode", "UndoList.Decode"]
+}
