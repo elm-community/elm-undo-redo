@@ -111,7 +111,8 @@ a future state.
 
 i.e.
 
-    undo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [ 2, 1 ] 3 [ 4, 5, 6 ]
+    undo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    --> UndoList [ 2, 1 ] 3 [ 4, 5, 6 ]
 
 -}
 undo : UndoList state -> UndoList state
@@ -130,7 +131,8 @@ into a past state.
 
 i.e.
 
-    redo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [ 4, 3, 2, 1 ] 5 [ 6 ]
+    redo (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    --> UndoList [ 4, 3, 2, 1 ] 5 [ 6 ]
 
 -}
 redo : UndoList state -> UndoList state
@@ -144,6 +146,12 @@ redo { past, present, future } =
 
 
 {-| Turn a state into an undo-list with neither past nor future.
+
+i.e.
+
+    fresh 0 (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    --> UndoList [] 0 [ ]
+
 -}
 fresh : state -> UndoList state
 fresh state =
@@ -163,7 +171,8 @@ This simply clears the past list.
 
 i.e.
 
-    forget (UndoList [3,2,1] 4 [5,6]) --> UndoList [] 4 [5,6]
+    forget (UndoList [3,2,1] 4 [5,6])
+     --> UndoList [] 4 [5,6]
 
 -}
 forget : UndoList state -> UndoList state
@@ -176,7 +185,8 @@ and clearing all other states.
 
 i.e.
 
-    reset (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> UndoList [] 1 []
+    reset (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    --> UndoList [] 1 []
 
 -}
 reset : UndoList state -> UndoList state
@@ -477,7 +487,8 @@ view viewer { present } =
 
 {-| Convert an undo-list to a list :
 
-    toList (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ]) --> [ 1, 2, 3, 4, 5, 6 ]
+    toList (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    --> [ 1, 2, 3, 4, 5, 6 ]
 
 -}
 toList : UndoList state -> List state
@@ -488,7 +499,8 @@ toList { past, present, future } =
 {-| Convert a list to undolist. The provided state is used as the present
 state and the list is used as the future states.
 
-    fromList 1 [ 2, 3, 4 ] --> UndoList [] 1 [ 2, 3, 4 ]
+    fromList 1 [ 2, 3, 4 ]
+    --> UndoList [] 1 [ 2, 3, 4 ]
 
 -}
 fromList : state -> List state -> UndoList state
