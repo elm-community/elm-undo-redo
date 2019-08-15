@@ -149,7 +149,7 @@ redo { past, present, future } =
 
 i.e.
 
-    fresh 0 (UndoList [ 3, 2, 1 ] 4 [ 5, 6 ])
+    fresh 0
     --> UndoList [] 0 [ ]
 
 -}
